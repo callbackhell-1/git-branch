@@ -29,5 +29,16 @@ Date: Sun Jul 16 02:22:16 2023 +0530
 ```
 
 3. Merge feature2 branch to master branch
- -> got to master
- `git merge feature2`
+   -> got to master
+   `git merge feature2`
+
+4. To get all the commit from github
+   `git pull origin master`
+   -> It means pull all the latest change from master and add it to my commits.
+
+5. add->commit->pull->push
+   In case of merge conflict, resolve the conflict,
+   add->comm->pull->push
+
+6. `git branch` -> list of all branch, active branch have \* on it.
+
