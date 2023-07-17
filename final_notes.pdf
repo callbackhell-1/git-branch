@@ -1,0 +1,374 @@
+## 1 asics :
+
+
+```
+Hash value : 40 digit
+    - out of 40, 2 used for naming the folder eg: 'b2'
+    - rest 38 is use as name eg. : '341ef7d9cf18b9bbe3df08ade1eef47c89450f'
+
+/*
+*location*/GIT/git-internal-demo/.git
+ls -a
+./  ../  config  description  HEAD  index  info/  objects/  refs/
+
+*location*/GIT/git-internal-demo/.git
+cd objects/b2/
+
+*location*/GIT/git-internal-demo/.git/objects/b2
+ls
+341ef7d9cf18b9bbe3df08ade1eef47c89450f
+
+*/
+
+```
+
+```
+we make another file test1.js and content of the test1.js is as same as test.js, after doing `git add .` , when we navigate to ".git/objects" , we can see  that the hash value is still :
+
+"b2/341ef7d9cf18b9bbe3df08ade1eef47c89450f"
+
+```
+
+```
+But when we make the new file test2.js and changes the content then we found the in objects folder there is one more hash folder created :
+'5a/  b2/'
+b2-> old one
+5a -> after git add test2.js
+why ?
+Because if two identical data is there , git is not gonna to make replica of that.
+test2.js, is a new file , with different content so it's hash is different.so it's hash will store in blob
+->Inside git content is stored only once
+-> inside git flies is handled in the form of blob
+```
+
+```
+files stored in the form of blob
+directories/folder stored in form of tree
+```
+
+```
+if we make any changes in file let say  in test2.js
+
+before :
+console.log("Hello world");
+
+After :
+console.log("Hello world");
+console.log("Hello from terminal");
+
+
+git add test2.js
+ modified:   test2.js
+
+before:
+*location*/GIT/git-internal-demo/.git/objects
+ ls
+5a/  b2/  info/  pack/
+
+after:
+*location*/GIT/git-internal-demo/.git/objects
+ ls
+5a/  b2/  c4/  info/  pack/
+
+ *location*/GIT/git-internal-demo/.git/objects/c4
+ ls
+6f256758d018e53ea9503e3d2a97757bc688c3
+
+-> Now new blob created with hash value :
+c4/...
+
+ls
+5a/  b2/  c4/  info/  pack/
+
+*location*/GIT/git-internal-demo/.git/objects
+ cd c4/
+
+*location*/GIT/git-internal-demo/.git/objects/c4
+ ls
+6f256758d018e53ea9503e3d2a97757bc688c3
+
+```
+
+```
+-> content of the file stored in the form of blob
+
+*path**/.git/objects
+ ls
+5a/  b2/  c4/  info/  pack/
+
+*path*/c4
+ ls
+6f256758d018e53ea9503e3d2a97757bc688c3
+
+To check the type of object:
+git cat-file -t c46f256
+o/p : blob
+
+To print the content of the file:
+git cat-file -p c46f256
+o/p:
+console.log("Hello world");
+console.log("Hello from terminal");
+```
+
+```
+COMMIT :
+After commit we get tons of new objects/blob
+
+before commit :
+5a/  b2/  c4/  info/  pack/
+
+After commit :
+58/  5a/  8a/  8b/  91/  b2/  c4/  info/  pack/
+
+
+New object:
+58/, 8a/,8b/,91/
+
+-> previously we were getting blob for folder/directory also, but after commit, we are getting: tree
+ git cat-file -t 589efd
+tree
+
+-> Among all the new objects , there ia one object which maintain the commit
+
+/8a
+ git cat-file -p 8ab1e
+tree 91240af6d9eaf76a91a09a9f2c1f07d3ce72860d -> pointing to root directory
+author Adarsh <jha01adarsh@gmail.com> 1689416727 +0530
+committer Adarsh <jha01adarsh@gmail.com> 1689416727 +0530
+
+First commit -> message
+
+
+--> commits also points to another commit.
+we made some changes in file. and commit again.
+before commit :
+58/  5a/  8a/  8b/  91/  b2/  c4/  info/  pack/
+
+After commit :
+58/  65/  8b/  a8/  c4/  info/
+5a/  8a/  91/  b2/  f2/  pack/
+
+new changes:
+ 65/, a8/
+
+
+ Lets check these two objects :
+ 65/ :
+  git cat-file -t 655cfe
+commit
+lets check the content of this object:
+ git cat-file -p 655cfe
+
+tree a8721c434a4df1ad5d636a7b21cc031771548915
+parent 8ab1e33d4db8b510e0b6d7d7839a1b9e89057e1d
+author Adarsh <jha01adarsh@gmail.com> 1689417627 +0530
+committer Adarsh <jha01adarsh@gmail.com> 1689417627 +0530
+
+Second commi
+
+->so, here we can see the new commit pointing to parent commit.
+
+2. a8/
+/a8
+ git cat-file -t a8721
+tree
+
+Epitome@DESKTOP-40QU259 MINGW64 ~/Desktop/BACKEND/GIT/git-internal-demo/.git/objects/a8
+ git cat-file -p  a8721
+100644 blob b2341ef7d9cf18b9bbe3df08ade1eef47c89450f    test.js
+100644 blob b2341ef7d9cf18b9bbe3df08ade1eef47c89450f    test1.js
+100644 blob f22a830af0a1f69ea274701b743a20dab26c71d1    test2.js
+040000 tree 589efd0fdac093cb231bf318e20d76719974ab5c    testing
+```
+
+# 2 Intermediate :
+
+`
+
+1.
+
+After commit we get :
+3 object:
+a. commit obj
+b. blob oj
+c. tree obj
+`
+
+`2.
+After commit we realise to add some more feature to code then :`git commit --amend`
+
+-> we created the commit and updated the same commit, still we get new commit object,why? bcz commit obj contains the date/time/author.
+so we can say that, commit never change,we can just add new commit.but we we do git log , we will see latest commit only
+`
+`
+-> heads points to the latest commit.
+refs->heads>master(branch).
+
+To check which branch heads pointing to :
+` git log --oneline
+7f11165 (HEAD -> master) commit1`
+`
+
+`git add -p`
+
+
+# 3. Advanced
+
+1. `git init` -> Powers your folder to be managed by git, and initialises a new empty
+   repository. It also creates a .git folder that has all the relevant logic to manage
+   versions of your project.
+
+2. `Working Area` -> There can be a bunch of files that are not currently handled by git.
+   It means that changes done or to be done in those files are not managed by git yet. A file
+   which is in working area is considered to be not in the staging area. When we do `git status`
+   and we see abunch if `untracked files` then these are actually called to be in the working area.
+
+3. `Staging area` -> What all files are going to be part of the next version that we will create.
+   This staging area is the place where git knows what changes will be done from the last version to
+   the next version.
+
+4. `Repository Area` -> This area actually contains the details of all you previous registered version.
+   And the files in this area, git already manages them and knows their version history.
+
+5. `git add <file>` -> moves file from working area to staging area
+
+6. `git rm --cached <file>` -> moves file back from staging area to working area
+
+7. `commit` -> Commit is a particular version of the project. It captures a snapshot of the project's staged
+   changes and creates a version out of it.
+
+8. `git commit` -> registers staging changes to a commit.
+
+9. `git log` -> list downs all the commits of the repository. If you want to exit out of git log prompt
+   press `q`.
+
+10. `git restore <file>` -> it removes all files changes from the staging area to be committed. This can
+    be useful, if we did some dirty piece of code and now no more want it. Instead of deleting every change
+    line by line, we can restore it or you can say restore last clean version of the file.
+
+11. `git restore --staged <file>` -> it removes file from changes from staging area to the working area.
+    this only works if changes are in your staging area
+
+12. Diff between git rm and git restore
+    ans: if you want to move the whole file back to the untracked state, then we do git rm, otherwise if we
+    just want the changes to be moved in working area or staging area then we git restore.
+
+13. `git diff commit1 commit2` -> gives the difference of all file changes between two commits
+
+14 `git commit -m "<your commit message>"` -> If we want to avoid opening a text editor like vim/nano to
+add commit message we can use this following command
+
+15. `git remote` -> list down all the remote connection names
+
+16. Remote connection -> It helps you to link two git repositories for uploading and downloading changes
+    from each otherwise
+
+17. `git remote add <name of remote> <link of the remote>` : this command helps us to add a new link to the
+    remote repo and give a name to it
+
+18. `git remote rm <name of remote>` : this command deletes a remote connection
+
+19. `git remote rename <olanme> <newname>` : this command remanes the remote connection
+
+Note: The name of the remote connection is always used to establish communication between the repos
+
+20. `git add <file1> <file2> <file3>`: this command will add multiple file changes together in the
+    staging area
+
+21. `git add .`: this command will add all files from working repo to staging area.
+
+22. `git pull <remote name> <branch name>` : downloads latest changes from the branch of the mentioned remote in your local repo.
+
+### Recommended practice to do
+
+    - make changes
+    - git add <file>
+    - git commit
+    - git pull
+    - git push
+
+23. Merge conflicts are a very common scnario
+
+merge conflicts can occur if multiple people try to make changes to the same file, and then collaborate
+
+24. "git remote add origin https://github.com/callbackhell-1/GIT-Project.git" : connecting git to remote link and , and now onwards that git link is termed as "origin"
+
+25. git push origin master : Here we refer origin as : "https://github.com/callbackhell-1/GIT-Project.git"
+
+1. Create new branch
+   `git checkout -b "<name_of_branch>"`
+
+2. change brach
+   `git checkout  master`
+
+```
+{
+    "git log
+commit d0cc6a5515108dce31fc53bc8d8f2b5853ac9794 (HEAD -> feature1, origin/master, master)
+Author: Adarsh <sec@gmail.com>
+Date: Sun Jul 16 02:22:16 2023 +0530
+
+test commit"
+
+" git log
+commit ca1d2258691cb96bc43485e282f171eed9e82b41 (HEAD -> master, origin/master)
+Author: Adarsh <jha01adarsh@gmail.com>
+Date: Sun Jul 16 02:34:14 2023 +0530
+
+    master commit
+
+commit d0cc6a5515108dce31fc53bc8d8f2b5853ac9794 (feature2, feature1)
+Author: Adarsh <jha01adarsh@gmail.com>
+Date: Sun Jul 16 02:22:16 2023 +0530
+
+    test commit"
+}
+```
+
+3. Merge feature2 branch to master branch
+   -> got to master
+   `git merge feature2`
+
+4. To get all the commit from github
+   `git pull origin master`
+   -> It means pull all the latest change from master and add it to my commits.
+
+5. add->commit->pull->push
+   In case of merge conflict, resolve the conflict,
+   add->comm->pull->push
+
+6. `git branch` -> list of all branch, active branch have \* on it.
+
+7. Scenario :
+   -> There is a master branch, feature branch .
+   -> developer 1 is working on feature branch, once he's done with all the code , he go to master branch and merge feature branch to master branch using `git merge feature`.
+   -> Once he merge, he do git commit , then git push to master. Meanwhile 2-3 developer push there code to master and commit it.
+   So, we are getting error while commiting.
+   -> what we will do:
+   a. merge
+   b. pull (`git pull origin master`)
+   c. `git push origin master`
+   ->
+
+->But problem here is, no one is reviewing our code we just push to master (i.e, prod) branch.
+
+-> That's why we never do merge locally and push to master .
+correct way to do it is 'Pull request'
+
+Pull Request :
+go to the brach where , you are working, after all code.
+git add
+git commit
+git pull
+git push origin <branch name>
+
+8. Get code on local
+   `git clone <git .git>`
+
+9. contribute to other persone repo/open source:
+   a. fork the code
+   b. clone the forked repo
+   c. make changes commit to forked repo.
+   d. create a pull request to original owner of repo.
+   d. wait for merge
